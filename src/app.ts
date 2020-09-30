@@ -96,6 +96,19 @@ app.ready((error: any) => {
 
 })
 
+app.register(require('fastify-static'), {
+  root: path.join(__dirname, '../public'),
+  prefix: '/assets/'
+})
+
+app.register(require('point-of-view'), {
+  engine: {
+    ejs: require('ejs'),
+    root: path.join(__dirname, '../views'),
+  },
+  includeViewExtension: true
+})
+
 app.register(routers)
 
 export default app

@@ -8,6 +8,7 @@ import loginRouter from './controllers/login'
 import schemaRouter from './controllers/schema'
 import customerRouter from './controllers/customer'
 import uploadRouter from './controllers/upload'
+import mailRouter from './controllers/mail'
 
 export default async function router(fastify: FastifyInstance) {
   // router prefix
@@ -20,4 +21,5 @@ export default async function router(fastify: FastifyInstance) {
   fastify.register(customerRouter, { prefix: '/customers' }) // http://localhost:8080/customers
 
   fastify.register(uploadRouter, { prefix: '/uploads' })
+  fastify.register(mailRouter, { prefix: '/mail' })
 }

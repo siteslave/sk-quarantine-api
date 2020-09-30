@@ -1,6 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import * as knex from 'knex'
+
+import { UserModel } from '../models/user'
 
 export default async function demo(fastify: FastifyInstance) {
+
+  const userModel = new UserModel()
+  const db: knex = fastify.db
 
   fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
     reply.send({ message: "Hello from DEMO Router" })
@@ -61,5 +67,26 @@ export default async function demo(fastify: FastifyInstance) {
     const userId = params.userId
 
     reply.send({ ok: true, userId })
+  })
+
+  // test ejs view
+  // http://localhost:8080/demo/view/demo
+  fastify.get('/view/demo', async (request: FastifyRequest, reply: FastifyReply) => {
+
+    const message = 'From ejs template'
+
+    reply.view('/views/demo', { message: message })
+
+  })
+  fastify.get('/view/layout', async (request: FastifyRequest, reply: FastifyReply) => {
+
+    try {
+      const rs: any = await userModel.read(db)
+      reply.view('/views/content', { users: rs })
+    } catch (error) {
+      reply.code(500).send({ ok: false, error: error.message })
+    }
+
+
   })
 }

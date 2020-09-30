@@ -16,4 +16,8 @@ declare module 'fastify' {
     file: any
     files: any[]
   }
+
+  interface FastifyReply {
+    view: any
+  }
 }
