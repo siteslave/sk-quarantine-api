@@ -21,6 +21,15 @@ export default async (fastify: FastifyInstance) => {
 
     const rs: any = await userModel.login(db, username, encPassword);
 
+    if (rs.length > 0) {
+      // success
+      const user = rs[0]
+      const token = fastify.jwt.sign({ id: user.user_id })
+      reply.send({ token })
+    } else {
+      reply.send({ ok: false, message: 'ชื่อผู้ใช้งาน/รหัสผ่าน ไม่ถูกต้อง' })
+    }
+
     reply.send(rs)
   })
 

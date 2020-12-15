@@ -11,9 +11,8 @@ export class UserModel {
     // SELECT user_id, first_name, last_name FROM users WHERE username=xx AND password=yyy
     return db('users')
       .select('user_id', 'first_name', 'last_name')
-      .where({ username, password })
-    // .where('username', username)
-    // .where('password', password)
+      .where('username', username)
+      .where('password', password)
   }
 
   read(db: knex) {
