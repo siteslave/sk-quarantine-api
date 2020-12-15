@@ -9,6 +9,8 @@ import schemaRouter from './controllers/schema'
 import customerRouter from './controllers/customer'
 import uploadRouter from './controllers/upload'
 import mailRouter from './controllers/mail'
+// Quarantine
+import quarantineRouter from './controllers/quarantine'
 
 export default async function router(fastify: FastifyInstance) {
   // router prefix
@@ -22,4 +24,8 @@ export default async function router(fastify: FastifyInstance) {
 
   fastify.register(uploadRouter, { prefix: '/uploads' })
   fastify.register(mailRouter, { prefix: '/mail' })
+
+  // Quarantine
+  fastify.register(quarantineRouter, { prefix: '/api/quarantine' })
+
 }
