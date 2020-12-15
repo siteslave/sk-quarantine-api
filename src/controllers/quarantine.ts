@@ -33,10 +33,14 @@ export default async (fastify: FastifyInstance) => {
     reply.send(rs)
   })
 
-  fastify.get('/private', {
+  fastify.get('/info', {
     preValidation: [fastify.authenticate]
   }, async (request: FastifyRequest, reply: FastifyReply) => {
-    reply.send({ message: "Protected area!" })
+    const userId = request.user.id
+    const rsInfo: any = await userModel.getInfo(db, userId)
+    delete rsInfo[0].password
+    delete rsInfo[0].username
+    reply.send(rsInfo[0])
   })
 
 }

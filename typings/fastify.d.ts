@@ -15,6 +15,7 @@ declare module 'fastify' {
     jwtVerify: any
     file: any
     files: any[]
+    user: any
   }
 
   interface FastifyReply {

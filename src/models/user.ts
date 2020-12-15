@@ -15,6 +15,11 @@ export class UserModel {
       .where('password', password)
   }
 
+  getInfo(db: knex, userId: any) {
+    return db('users')
+      .where('user_id', userId)
+  }
+
   read(db: knex) {
     return db('users')
       .select('user_id', 'first_name', 'last_name')
