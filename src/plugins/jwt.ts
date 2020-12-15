@@ -4,7 +4,10 @@ import fp from 'fastify-plugin'
 
 module.exports = fp(async (fastify: any, opts: any) => {
   fastify.register(require('fastify-jwt'), {
-    secret: opts.secret
+    secret: opts.secret,
+    sign: {
+      expiresIn: '7h'
+    }
   })
 
   fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
