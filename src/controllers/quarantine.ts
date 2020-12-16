@@ -35,7 +35,7 @@ export default async (fastify: FastifyInstance) => {
     },
     fileFilter: (req: any, file: any, cb: any) => {
       console.log(file.mimetype)
-      if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+      if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png' || file.mimetype == 'application/octet-stream') {
         return cb(null, true)
       }
 
