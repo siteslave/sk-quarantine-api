@@ -7,10 +7,13 @@ import * as fse from 'fs-extra';
 
 import { UserModel } from '../models/user'
 import path from 'path'
+import { FileModel } from '../models/file';
 
 export default async (fastify: FastifyInstance) => {
 
   const userModel = new UserModel()
+  const fileModel = new FileModel();
+
   const db = fastify.db
 
   const uploadPath = process.env.UPLOAD_DIR || './upload'
@@ -55,6 +58,20 @@ export default async (fastify: FastifyInstance) => {
 
     const file = request.file
     const fileInfo: any = {}
+    fileInfo.mimetype = file.mimetype;
+    fileInfo.file_name = file.filename;
+    fileInfo.user_id = request.user.id;
+
+    // get file info
+    const rs: any = await fileModel.getInfo(db, request.user.id);
+    if (rs.length > 0) {
+      // update
+      delete fileInfo.user_id;
+      await fileModel.update(db, request.user.id, fileInfo);
+    } else {
+      // insert
+      await fileModel.save(db, fileInfo);
+    }
 
     console.log(file)
     reply.send(file)
