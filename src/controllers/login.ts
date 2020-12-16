@@ -26,7 +26,8 @@ export default async function login(fastify: FastifyInstance) {
 
         const token = fastify.jwt.sign({
           firstName: user.first_name,
-          lastName: user.last_name
+          lastName: user.last_name,
+          id: user.user_id
         })
 
         reply.send({ token })

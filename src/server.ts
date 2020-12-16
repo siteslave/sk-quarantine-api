@@ -1,7 +1,7 @@
 import app from './app'
 
 const port = 8080
-const address = '127.0.0.1'
+const address = '0.0.0.0'
 
 const start = async () => {
   try {
