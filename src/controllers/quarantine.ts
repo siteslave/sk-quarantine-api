@@ -3,7 +3,6 @@ import * as crypto from 'crypto'
 
 import multer from 'fastify-multer'
 import { v4 as uuidv4 } from 'uuid';
-
 import * as fse from 'fs-extra';
 
 import { UserModel } from '../models/user'
