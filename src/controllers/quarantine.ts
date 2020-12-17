@@ -2,6 +2,8 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import * as crypto from 'crypto'
 import * as fs from 'fs';
 
+import moment from 'moment';
+
 import multer from 'fastify-multer'
 import { v4 as uuidv4 } from 'uuid';
 import * as fse from 'fs-extra';
@@ -9,11 +11,13 @@ import * as fse from 'fs-extra';
 import { UserModel } from '../models/user'
 import path from 'path'
 import { FileModel } from '../models/file';
+import { Quarantine } from '../models/quarantine';
 
 export default async (fastify: FastifyInstance) => {
 
   const userModel = new UserModel()
-  const fileModel = new FileModel();
+  const fileModel = new FileModel()
+  const quarantineModel = new Quarantine()
 
   const db = fastify.db
 
@@ -132,5 +136,19 @@ export default async (fastify: FastifyInstance) => {
     reply.type('image/jpeg')
     reply.send(fileData)
   })
+
+  fastify.get('/screening', {
+    preValidation: [fastify.authenticate]
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const userId = request.user.id
+    const rsInfo: any = await quarantineModel.getList(db, userId)
+    const items = rsInfo.map((v: any) => {
+      v.serve_date = moment(v.serve_date).format('YYYY-MM-DD');
+      return v;
+    })
+
+    reply.send(items)
+  })
+
 
 }
