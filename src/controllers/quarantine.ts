@@ -115,6 +115,21 @@ export default async (fastify: FastifyInstance) => {
     reply.send(rsInfo[0])
   })
 
+  fastify.get('/temp-list', {
+    preValidation: [fastify.authenticate]
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const userId = request.user.id
+    const rsInfo: any = await quarantineModel.getTempQuery(db, userId)
+
+    const items = rsInfo.map((v: any) => {
+      v.display = `${v.temp} องศา`;
+      v.value = v.temp;
+      return v;
+    });
+
+    reply.send(items)
+  })
+
   fastify.get('/image-profile', {
     preValidation: [fastify.authenticate]
   }, async (request: FastifyRequest, reply: FastifyReply) => {

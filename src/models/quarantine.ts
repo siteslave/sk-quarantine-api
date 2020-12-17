@@ -13,4 +13,12 @@ export class Quarantine {
     return sql.orderByRaw('serve_date, serve_time')
   }
 
+  getTempQuery(db: knex, userId: any) {
+    return db('quarantine')
+      .select('temp')
+      .where('user_id', userId)
+      .groupBy('temp')
+      .orderBy('temp');
+  }
+
 }
