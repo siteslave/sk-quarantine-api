@@ -20,6 +20,11 @@ export class UserModel {
       .where('user_id', userId)
   }
 
+  getImage(db: knex, userId: any) {
+    return db('image_users')
+      .where('user_id', userId)
+  }
+
   read(db: knex) {
     return db('users')
       .select('user_id', 'first_name', 'last_name')

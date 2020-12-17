@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import * as crypto from 'crypto'
+import * as fs from 'fs';
 
 import multer from 'fastify-multer'
 import { v4 as uuidv4 } from 'uuid';
@@ -108,6 +109,28 @@ export default async (fastify: FastifyInstance) => {
     delete rsInfo[0].username
 
     reply.send(rsInfo[0])
+  })
+
+  fastify.get('/image-profile', {
+    preValidation: [fastify.authenticate]
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const userId = request.user.id
+    const rsInfo: any = await userModel.getImage(db, userId)
+
+    const imageFileName = rsInfo[0].file_name;
+    const imagePath = path.join(uploadPath, imageFileName);
+    let profileImage;
+
+    if (fs.existsSync(imagePath)) {
+      profileImage = imagePath;
+    } else {
+      profileImage = path.join(__dirname, '../../public/images/placeholder.png')
+    }
+
+    const fileData = fs.readFileSync(profileImage)
+
+    reply.type('image/jpeg')
+    reply.send(fileData)
   })
 
 }
