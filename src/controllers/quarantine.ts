@@ -141,7 +141,12 @@ export default async (fastify: FastifyInstance) => {
     preValidation: [fastify.authenticate]
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const userId = request.user.id
-    const rsInfo: any = await quarantineModel.getList(db, userId)
+
+    // ?query=xxx
+    const params: any = request.query;
+    const query = params.query || null;
+
+    const rsInfo: any = await quarantineModel.getList(db, userId, query)
     const items = rsInfo.map((v: any) => {
       v.serve_date = moment(v.serve_date).format('YYYY-MM-DD');
       return v;
