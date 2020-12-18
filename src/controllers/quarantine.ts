@@ -302,6 +302,7 @@ export default async (fastify: FastifyInstance) => {
       data.lat = lat;
       data.lng = lng;
       data.place_name = placeName;
+      data.tracking_datetime = moment().format('YYYY-MM-DD HH:mm:ss');
 
       await quarantineModel.saveTracking(db, data);
       reply.send({ ok: true });
