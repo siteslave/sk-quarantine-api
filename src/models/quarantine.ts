@@ -21,4 +21,9 @@ export class Quarantine {
       .orderBy('temp');
   }
 
+  saveTracking(db: knex, data: any) {
+    return db('trackings')
+      .insert(data);
+  }
+
 }

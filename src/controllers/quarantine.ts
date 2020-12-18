@@ -287,4 +287,29 @@ export default async (fastify: FastifyInstance) => {
   })
 
 
+  fastify.post('/save-tracking', {
+    preValidation: [fastify.authenticate]
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const userId = request.user.id
+    const params: any = request.body;
+    const lat = params.lat;
+    const lng = params.lng;
+    const placeName = params.placeName;
+
+    if (lat && lng && placeName) {
+      const data: any = {};
+      data.user_id = userId;
+      data.lat = lat;
+      data.lng = lng;
+      data.place_name = placeName;
+
+      await quarantineModel.saveTracking(db, data);
+      reply.send({ ok: true });
+    } else {
+      reply.code(500).send({ ok: false, error: 'ข้อมูลไม่ครบ' });
+    }
+
+  })
+
+
 }
