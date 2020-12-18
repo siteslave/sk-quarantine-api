@@ -2,6 +2,8 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import * as crypto from 'crypto'
 import * as fs from 'fs';
 
+const gcm = require('node-gcm');
+
 import moment from 'moment';
 
 import multer from 'fastify-multer'
@@ -14,6 +16,9 @@ import { FileModel } from '../models/file';
 import { Quarantine } from '../models/quarantine';
 
 export default async (fastify: FastifyInstance) => {
+
+  const sender = new gcm.Sender('AAAA0GsqMz4:APA91bG4NwjMs1kc8uMpuZyqmLOIDCC1MD5-_EvTIjfBU15iyHSf9EgnWSQ9r-k3BPkAoSaf9bQbpSQT8T4Eh7WDFiBZXthyevCH7NQzKL-xLyPOx_-IYftBcpYIpcWuAFv2W_orhdGe');
+
 
   const userModel = new UserModel()
   const fileModel = new FileModel()
@@ -188,6 +193,97 @@ export default async (fastify: FastifyInstance) => {
     })
 
     reply.send(items)
+  })
+
+  fastify.post('/send-notify', {
+    preValidation: [fastify.authenticate]
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+
+    const params: any = request.body;
+    const userId = params.userId;
+    const msg = params.msg;
+
+    const rsInfo: any = await userModel.getInfo(db, userId);
+
+    if (rsInfo.length > 0) {
+
+      var regTokens: any = [];
+
+      const deviceToken = rsInfo[0].device_token;
+
+      regTokens.push(deviceToken); // ['xxxxx']
+
+      var message = new gcm.Message({
+        contentAvailable: true,
+        collapseKey: 'skcovid',
+        priority: 'high',
+        notification: {
+          title: "SK-COVID",
+          icon: "ic_launcher",
+          body: msg || 'ข้อความปกติ'
+        }
+      });
+
+      sender.sendNoRetry(message, { registrationTokens: regTokens }, (err: any, response: any) => {
+        if (err) {
+          console.log(err);
+          reply.send({ ok: false })
+        } else {
+          console.log(response);
+          reply.send({ ok: true })
+        };
+      });
+
+    } else {
+      reply.send({ ok: false, message: 'ไม่พบผู้ใช้งาน' })
+    }
+
+
+  })
+
+  fastify.post('/send-notify-all', {
+    preValidation: [fastify.authenticate]
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+
+    const params: any = request.body;
+    const msg = params.msg;
+
+    const rsInfo: any = await userModel.getDeviceTokens(db);
+
+    if (rsInfo.length > 0) {
+
+      var regTokens: any = [];
+
+      for (const token of rsInfo) {
+        regTokens.push(token.device_token);
+      }
+
+      var message = new gcm.Message({
+        contentAvailable: true,
+        collapseKey: 'skcovid',
+        priority: 'high',
+        notification: {
+          title: "SK-COVID",
+          icon: "ic_launcher",
+          body: msg || 'ข้อความปกติ'
+        }
+      });
+
+      sender.sendNoRetry(message, { registrationTokens: regTokens }, (err: any, response: any) => {
+        if (err) {
+          console.log(err);
+          reply.send({ ok: false })
+        } else {
+          console.log(response);
+          reply.send({ ok: true })
+        };
+      });
+
+    } else {
+      reply.send({ ok: false, message: 'ไม่พบผู้ใช้งาน' })
+    }
+
+
   })
 
 

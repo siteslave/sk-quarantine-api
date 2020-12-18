@@ -20,6 +20,10 @@ export class UserModel {
       .where('user_id', userId)
   }
 
+  getDeviceTokens(db: knex) {
+    return db('users');
+  }
+
   getImage(db: knex, userId: any) {
     return db('image_users')
       .where('user_id', userId)
