@@ -115,6 +115,26 @@ export default async (fastify: FastifyInstance) => {
     reply.send(rsInfo[0])
   })
 
+  fastify.put('/device-token', {
+    preValidation: [fastify.authenticate]
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const userId = request.user.id
+    const params: any = request.body;
+    const deviceToken = params.deviceToken;
+
+    if (deviceToken) {
+      const data: any = {};
+      data.device_token = deviceToken;
+
+      await userModel.update(db, userId, data)
+
+      reply.send({ ok: true })
+    } else {
+      reply.send({ ok: false })
+    }
+
+  })
+
   fastify.get('/temp-list', {
     preValidation: [fastify.authenticate]
   }, async (request: FastifyRequest, reply: FastifyReply) => {
